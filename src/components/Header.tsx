@@ -240,13 +240,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenEnquiry, onOpenAIPlanner }
 
         {/* Zone 3: Primary Action */}
         <div className="flex items-center gap-3 shrink-0">
-          <a
-            href="tel:+918126716179"
-            className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold text-[#650018] bg-[#FAF7F2] border border-[#E8E1DA] px-3.5 py-2 rounded-md hover:border-[#650018] transition-colors whitespace-nowrap shrink-0"
-          >
-            <Phone className="w-3.5 h-3.5 text-[#C6A15B]" />
-            <span>8126716179</span>
-          </a>
 
           <button
             onClick={() => onOpenEnquiry()}
