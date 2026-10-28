@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Play, Eye, Volume2, VolumeX, MessageCircle, ArrowRight, X, Sparkles } from 'lucide-react';
 
 interface ReelItem {
@@ -7,7 +7,8 @@ interface ReelItem {
   location: string;
   duration: string;
   views: string;
-  image: string;
+  image: string; // thumbnail / poster shown on the card and while the video loads
+  video: string; // video file in public/videos/
   audioTrack: string;
   description: string;
   relatedPackageSlug: string;
@@ -21,6 +22,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:35',
     views: '48.2K',
     image: '/images/reel_taj_sunrise.jpg',
+    video: '/videos/taj_mahal.mp4',
     audioTrack: 'Yamuna Morning Mist & Bells',
     description: 'Watching the Makrana white marble turn warm rose and apricot as first sunlight breaks over the Yamuna river. A private moment before gates open to crowds.',
     relatedPackageSlug: 'same-day-agra-tour-from-delhi'
@@ -32,6 +34,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:42',
     views: '34.7K',
     image: '/images/reel_amber_fort_jaipur.jpg',
+    video: '/videos/rajasthan_tour_package.mp4',
     audioTrack: 'Royal Nagada & Sitar',
     description: 'Ascending the ancient cobblestone ramparts overlooking Maota lake and stepping into the thousand convex mirrors of the Maharaja’s Hall of Mirrors.',
     relatedPackageSlug: 'jaipur-tour-packages'
@@ -43,6 +46,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:50',
     views: '52.1K',
     image: '/images/reel_jaisalmer_dunes.jpg',
+    video: '/videos/delhi_tour.mp4',
     audioTrack: 'Kalbelia Desert Rhythm',
     description: 'Riding into the rippling golden sands as the desert sun melts into the horizon, followed by starlit Swiss camp folk songs and chai.',
     relatedPackageSlug: 'jaisalmer-tour-packages'
@@ -54,6 +58,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:38',
     views: '29.8K',
     image: '/images/reel_udaipur_lake.jpg',
+    video: '/videos/delhi_tour.mp4',
     audioTrack: 'Gentle Lake Pichola Water Lapping',
     description: 'Drifting past the illuminated white arches of City Palace and Jag Mandir island with the rugged Aravalli hills silhouetted against twilight.',
     relatedPackageSlug: 'golden-triangle-tour-with-udaipur'
@@ -65,6 +70,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:29',
     views: '41.3K',
     image: '/images/reel_delhi_bazaar.jpg',
+    video: '/videos/delhi_tour.mp4',
     audioTrack: 'Old Delhi Street Vibes & Bells',
     description: 'Weaving through the sensory kaleidoscope of Khari Baoli spice market, historical silver havelis, and the colossal red walls of Jama Masjid.',
     relatedPackageSlug: 'delhi-tour-packages'
@@ -76,6 +82,7 @@ const REELS_DATA: ReelItem[] = [
     duration: '0:46',
     views: '63.9K',
     image: '/images/reel_varanasi_aarti.jpg',
+    video: '/videos/delhi_tour.mp4',
     audioTrack: 'Sacred Sanskrit Chants & Conch',
     description: 'Seven priests moving synchronized multi-tiered brass lamp pyres in honor of Holy Mother Ganga as thousands of earthen lamps float on the water.',
     relatedPackageSlug: 'golden-triangle-tour-with-varanasi'
@@ -88,7 +95,42 @@ interface TravelReelsSectionProps {
 
 export const TravelReelsSection: React.FC<TravelReelsSectionProps> = ({ onOpenEnquiry }) => {
   const [activeReel, setActiveReel] = useState<ReelItem | null>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const openReel = (reel: ReelItem) => {
+    setActiveReel(reel);
+    setIsPaused(false);
+    setVideoFailed(false);
+    setProgress(0);
+    setIsMuted(false); // the click counts as a user gesture, so sound is allowed
+  };
+
+  const closeReel = () => {
+    videoRef.current?.pause();
+    setActiveReel(null);
+  };
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  };
+
+  // Close with the Escape key
+  useEffect(() => {
+    if (!activeReel) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeReel();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeReel]);
 
   return (
     <section className="space-y-6">
@@ -112,7 +154,7 @@ export const TravelReelsSection: React.FC<TravelReelsSectionProps> = ({ onOpenEn
         {REELS_DATA.map((reel) => (
           <div
             key={reel.id}
-            onClick={() => setActiveReel(reel)}
+            onClick={() => openReel(reel)}
             className="group relative h-72 sm:h-84 rounded-xl overflow-hidden cursor-pointer shadow-sm border border-[#E8E1DA] hover:border-[#650018] transition-all"
           >
             {/* Background Image */}
@@ -166,15 +208,71 @@ export const TravelReelsSection: React.FC<TravelReelsSectionProps> = ({ onOpenEn
           <div className="relative w-full max-w-sm sm:max-w-md bg-[#262626] text-white rounded-2xl overflow-hidden shadow-2xl border border-white/20 flex flex-col">
             {/* Modal Media Box */}
             <div className="relative h-96 sm:h-[440px] bg-black overflow-hidden">
-              <img loading="lazy" decoding="async"
-                src={activeReel.image}
-                alt={activeReel.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/images/taj_mahal_hero.jpg';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
+              {!videoFailed ? (
+                <video
+                  key={activeReel.id}
+                  ref={videoRef}
+                  src={activeReel.video}
+                  poster={activeReel.image}
+                  className="w-full h-full object-cover cursor-pointer"
+                  autoPlay
+                  loop
+                  playsInline
+                  muted={isMuted}
+                  preload="auto"
+                  onClick={togglePlay}
+                  onPlay={() => setIsPaused(false)}
+                  onPause={() => setIsPaused(true)}
+                  onTimeUpdate={(e) => {
+                    const v = e.currentTarget;
+                    setProgress(v.duration ? (v.currentTime / v.duration) * 100 : 0);
+                  }}
+                  onError={() => setVideoFailed(true)}
+                  // If the browser refuses to autoplay with sound, retry muted instead of showing a frozen frame
+                  onLoadedData={(e) => {
+                    e.currentTarget.play().catch(() => {
+                      setIsMuted(true);
+                      e.currentTarget.muted = true;
+                      e.currentTarget.play().catch(() => {});
+                    });
+                  }}
+                />
+              ) : (
+                <img
+                  src={activeReel.image}
+                  alt={activeReel.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/taj_mahal_hero.jpg';
+                  }}
+                />
+              )}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
+
+              {/* Paused indicator (tap video to play / pause) */}
+              {!videoFailed && isPaused && (
+                <button
+                  onClick={togglePlay}
+                  aria-label="Play video"
+                  className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-[#650018]/85 border border-[#DFCA95] flex items-center justify-center z-10"
+                >
+                  <Play className="w-7 h-7 text-white ml-1 fill-white" />
+                </button>
+              )}
+
+              {/* Fallback notice when the video file is missing */}
+              {videoFailed && (
+                <span className="absolute top-16 left-4 z-10 text-[11px] bg-black/60 text-white/90 px-2.5 py-1 rounded-full">
+                  Video coming soon
+                </span>
+              )}
+
+              {/* Progress bar */}
+              {!videoFailed && (
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-10">
+                  <div className="h-full bg-[#DFCA95]" style={{ width: `${progress}%` }} />
+                </div>
+              )}
 
               {/* Top Controls */}
               <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
@@ -191,7 +289,7 @@ export const TravelReelsSection: React.FC<TravelReelsSectionProps> = ({ onOpenEn
                     {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-[#DFCA95]" />}
                   </button>
                   <button
-                    onClick={() => setActiveReel(null)}
+                    onClick={closeReel}
                     className="p-1.5 rounded-full bg-black/50 text-white hover:bg-black/80"
                     aria-label="Close"
                   >
@@ -201,7 +299,7 @@ export const TravelReelsSection: React.FC<TravelReelsSectionProps> = ({ onOpenEn
               </div>
 
               {/* Bottom Caption & Audio */}
-              <div className="absolute bottom-4 left-4 right-4 space-y-2 z-10">
+              <div className="pointer-events-none absolute bottom-5 left-4 right-4 space-y-2 z-10">
                 <div className="flex items-center gap-2 text-xs text-[#DFCA95]">
                   <span>{activeReel.audioTrack}</span>
                   <span>·</span>

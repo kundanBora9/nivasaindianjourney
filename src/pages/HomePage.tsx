@@ -55,7 +55,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenEnquiry, onOpenAIPlann
         </div>
 
         {/* Cinematic Deep Burgundy / Charcoal Gradient Scrim for Legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#4d0012]/95 via-[#650018]/85 to-black/70 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#4d0012]/50 z-10" />
 
         {/* Content Container (Reduced text, clean & visually appealing) */}
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-20 sm:py-28 relative z-20 w-full">
