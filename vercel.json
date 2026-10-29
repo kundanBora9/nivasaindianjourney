@@ -1,0 +1,8 @@
+{
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/golden-triangle-tour-5-days", "destination": "/tour-packages/golden-triangle-tour", "permanent": true },
+    { "source": "/taj-mahal-sunrise-tour", "destination": "/tour-packages/same-day-agra-tour-from-delhi", "permanent": true },
+    { "source": "/delhi-one-day-tour", "destination": "/tour-packages/delhi-tour-packages", "permanent": true }
+  ]
+}
