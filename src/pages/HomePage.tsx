@@ -191,7 +191,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenEnquiry, onOpenAIPlann
             className="group relative h-80 rounded-xl overflow-hidden border border-[#E8E1DA] shadow-sm flex flex-col justify-end p-5"
           >
             <img loading="lazy" decoding="async"
-              src="/images/amber_fort_jaipur.jpg"
+              src="/images/rajasthan/rajasthan_tour_package.jpg"
               alt="Rajasthan Tours"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -214,7 +214,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenEnquiry, onOpenAIPlann
             className="group relative h-80 rounded-xl overflow-hidden border border-[#E8E1DA] shadow-sm flex flex-col justify-end p-5"
           >
             <img loading="lazy" decoding="async"
-              src="/images/taj_mahal_hero.jpg"
+              src="/images/agra_fort.jpg"
               alt="Golden Triangle Tours"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -237,7 +237,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenEnquiry, onOpenAIPlann
             className="group relative h-80 rounded-xl overflow-hidden border border-[#E8E1DA] shadow-sm flex flex-col justify-end p-5"
           >
             <img loading="lazy" decoding="async"
-              src="/images/agra_fort.jpg"
+              src="/images/taj_mahal_hero.jpg"
               alt="Agra and Taj Mahal Tours"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -287,9 +287,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenEnquiry, onOpenAIPlann
               <span className="text-xs font-semibold uppercase tracking-wider text-[#C6A15B]">
                 Handcrafted Holiday Packages
               </span>
-              <span className="text-[11px] font-bold bg-[#650018]/10 text-[#650018] px-2 py-0.5 rounded">
-                ★ 4.9/5 MMT Style Hub
-              </span>
+              
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#650018]">
               Popular Tour Packages

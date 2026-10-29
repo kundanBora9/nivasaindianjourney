@@ -253,7 +253,7 @@ export const TourListingPage: React.FC<TourListingPageProps> = ({
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-8 w-full space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md border border-white/25 rounded-full text-xs font-semibold uppercase tracking-wider text-[#DFCA95]">
             <Sparkles className="w-3.5 h-3.5 text-[#DFCA95]" />
-            <span>MakeMyTrip Inspired Holiday Hub · 100% Private & Customizable</span>
+            <span>100% Private & Customizable</span>
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-white max-w-4xl drop-shadow-md">
@@ -266,10 +266,7 @@ export const TourListingPage: React.FC<TourListingPageProps> = ({
 
           {/* MMT Key Inclusions & Value Props Bar */}
           <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm text-white/90">
-            <span className="flex items-center gap-1.5">
-              <span className="text-[#DFCA95] font-bold">★ 4.9/5</span>
-              <span className="text-white/70">(1,450+ Verified Reviews)</span>
-            </span>
+           
             <span className="flex items-center gap-1.5">
               <Car className="w-4 h-4 text-[#DFCA95]" />
               <span>Dedicated AC Fleet</span>

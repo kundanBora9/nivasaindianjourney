@@ -32,7 +32,7 @@ export const Footer: React.FC = () => {
                 <Mail className="w-4 h-4 text-[#DFCA95] shrink-0" />
                 <span>Email: </span>
                 <a href="mailto:contact@nivasaindiajourney.com" className="hover:underline">
-                  contact@nivasaindiajourney.com
+                  booking@nivasaindiajourney.com
                 </a>
               </div>
               <div className="flex items-start gap-2.5 text-white/90">

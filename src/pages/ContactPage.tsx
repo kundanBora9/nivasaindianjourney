@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, MessageCircle, Clock, ShieldCheck, CheckCircle } from 'lucide-react';
 import { Breadcrumb } from '../components/Breadcrumb';
+import { submitEnquiry } from '../lib/submitEnquiry';
 
 export const ContactPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -10,14 +11,29 @@ export const ContactPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitEnquiry({
+        source: 'contact-page',
+        fullName: name,
+        phone,
+        email,
+        destination,
+        message,
+        website: honeypot
+      });
       setIsSubmitted(true);
-    }, 500);
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Could not send your enquiry. Please try WhatsApp or call us.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getWhatsAppDirectUrl = () => {
@@ -153,6 +169,20 @@ export const ContactPage: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              {/* Honeypot field: hidden from people, bots fill it in */}
+              <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+                <label>
+                  Website
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                </label>
+              </div>
+
+              {errorMsg && (
+                <div role="alert" className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded text-xs">
+                  {errorMsg}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-medium text-[#262626] mb-1">Your Full Name *</label>
@@ -223,7 +253,7 @@ export const ContactPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-3 px-4 bg-[#650018] hover:bg-[#4d0012] text-white font-medium rounded text-xs uppercase tracking-wider cursor-pointer"
+                  className="flex-1 py-3 px-4 bg-[#650018] hover:bg-[#4d0012] text-white font-medium rounded text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? 'Sending Request...' : 'Submit Enquiry'}
                 </button>

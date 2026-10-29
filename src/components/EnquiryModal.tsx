@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Phone, MessageCircle, CheckCircle, ShieldCheck } from 'lucide-react';
+import { submitEnquiry } from '../lib/submitEnquiry';
 
 interface EnquiryModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     if (initialPackage) {
@@ -28,7 +30,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
@@ -38,11 +40,25 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
     }
 
     setIsSubmitting(true);
-    // Simulate reliable enquiry receipt
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitEnquiry({
+        source: 'enquiry-modal',
+        fullName,
+        phone,
+        email,
+        destination,
+        travelDate,
+        travellers,
+        hotelCategory,
+        message,
+        website: honeypot
+      });
       setSubmitted(true);
-    }, 600);
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Could not send your enquiry. Please try WhatsApp or call us.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getWhatsAppPrefillUrl = () => {
@@ -123,6 +139,14 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              {/* Honeypot field: hidden from people, bots fill it in */}
+              <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+                <label>
+                  Website
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+                </label>
+              </div>
+
               {errorMsg && (
                 <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded text-xs">
                   {errorMsg}
